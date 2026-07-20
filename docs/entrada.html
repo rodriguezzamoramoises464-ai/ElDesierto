@@ -114,23 +114,18 @@ const productoEncontrado = productosEncontrados[0];
     const nuevaCantidad = Number(productoEncontrado.Cantidad) + cantidad;
 
     // 3. Actualizar el inventario
-    const { data: productoActualizado, error: errorActualizacion } =
+    const { error: errorActualizacion } =
     await clienteSupabase
     .from("Productos")
     .update({
         Cantidad: nuevaCantidad
     })
-    .eq("Nombre", productoEncontrado.Nombre)
-    .select();
+    .eq("Identificación", idProducto);
 
-    if(errorActualizacion){
-        alert("Error actualizando el inventario: " + errorActualizacion.message);
-        return;
-    }
-if(!productoActualizado || productoActualizado.length === 0){
-    alert("No se actualizó ninguna fila del inventario.");
+if(errorActualizacion){
+    alert("Error actualizando el inventario: " + errorActualizacion.message);
     return;
-          }
+}
     // 4. Registrar el movimiento
     const { error: errorMovimiento } =
         await clienteSupabase
