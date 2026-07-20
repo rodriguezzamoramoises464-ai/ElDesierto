@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Entrada de mercancía</title>
 
 <style>
@@ -44,7 +45,9 @@ h1{
 color:#8b4513;
 }
 </style>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 
 <body>
@@ -53,148 +56,178 @@ color:#8b4513;
 
 <h1>➕ Entrada</h1>
 
-<input type="date">
+<input type="date" id="fecha">
 
 <select id="producto">
+
 <option value="1">Maíz</option>
 <option value="2">Soja</option>
 <option value="3">Salvado</option>
 <option value="4">Cebada</option>
+
 </select>
 
-<input type="number" placeholder="Cantidad (kg)">
+<input type="number" id="cantidad" placeholder="Cantidad (kg)">
 
-<textarea placeholder="Observación"></textarea>
+<textarea id="observacion" placeholder="Observación"></textarea>
 
 <button onclick="guardar()">Guardar</button>
 
 </div>
 
+<script src="supabase.js"></script>
+
 <script>
 
 async function guardar(){
 
-    const fecha = document.querySelector("input[type='date']").value;
-    const producto = document.querySelector("select").value;
-    const cantidad = Number(document.querySelector("input[type='number']").value);
-    const observacion = document.querySelector("textarea").value;
+    const fecha = document.getElementById("fecha").value;
+    const idProducto = Number(document.getElementById("producto").value);
+    const cantidad = Number(document.getElementById("cantidad").value);
+    const observacion = document.getElementById("observacion").value;
 
-    if(!fecha || !producto || !cantidad || cantidad <= 0){
+    if(!fecha || !idProducto || !cantidad || cantidad <= 0){
+
         alert("Completa correctamente la fecha, el producto y la cantidad.");
+
         return;
+
     }
 
     // 1. Buscar el producto actual
-const idProducto = Number(producto);
 
-const { data: productosEncontrados, error: errorBusqueda } =
-    await clienteSupabase
-    .from("Productos")
-    .select("*")
-    .eq("Identificación", idProducto);
+    const { data: productoEncontrado, error: errorBusqueda } =
 
-if(errorBusqueda){
-    alert("Error buscando el producto: " + errorBusqueda.message);
-    return;
-}
+        await clienteSupabase
 
-if(!productosEncontrados || productosEncontrados.length === 0){
-    alert("No se encontró el producto número " + idProducto);
-    return;
-}
+        .from("Productos")
 
-const productoEncontrado = productosEncontrados[0];
+        .select("Identificación, Nombre, Unidad, Cantidad")
+
+        .eq("Identificación", idProducto)
+
+        .single();
+
 
     if(errorBusqueda){
+
         alert("Error buscando el producto: " + errorBusqueda.message);
+
         return;
+
     }
 
-    
-// 2. Actualizar directamente la cantidad del producto
-const nuevaCantidad = Number(productoEncontrado.Cantidad) + cantidad;
 
-const { data: productoActualizado, error: errorActualizacion } =
-    await clienteSupabase
-    .from("Productos")
-    .update({
-        Cantidad: nuevaCantidad
-    })
-    .eq("Nombre", productoEncontrado.Nombre)
-    .select("Nombre, Cantidad");
+    if(!productoEncontrado){
 
-if(errorActualizacion){
-    alert("Error actualizando el inventario: " + errorActualizacion.message);
-    return;
-}
+        alert("No se encontró el producto.");
 
-if(!productoActualizado || productoActualizado.length === 0){
-    alert("La base de datos no actualizó ningún producto.");
-    return;
-}
+        return;
 
-alert(
-    "Inventario actualizado:\n" +
-    productoActualizado[0].Nombre +
-    " = " +
-    productoActualizado[0].Cantidad +
-    " kg"
-);
-const { data: productoActualizado, error: errorActualizacion } =
-    await clienteSupabase
-    .from("Productos")
-    .update({
-        Cantidad: nuevaCantidad
-    })
-    .eq("Nombre", productoEncontrado.Nombre)
-    .select("Nombre, Cantidad");
+    }
 
-if(errorActualizacion){
-    alert("Error actualizando el inventario: " + errorActualizacion.message);
-    return;
-}
 
-if(!productoActualizado || productoActualizado.length === 0){
-    alert("La base de datos no actualizó ningún producto.");
-    return;
-}
+    // 2. Calcular nueva cantidad
 
-alert(
-    "Inventario actualizado:\n" +
-    productoActualizado[0].Nombre +
-    " = " +
-    productoActualizado[0].Cantidad +
-    " kg"
-);
-    // 4. Registrar el movimiento
-    const { error: errorMovimiento } =
+    const nuevaCantidad =
+        Number(productoEncontrado.Cantidad) + cantidad;
+
+
+    // 3. Actualizar el inventario
+
+    const { error: errorActualizacion } =
+
         await clienteSupabase
+
+        .from("Productos")
+
+        .update({
+
+            Cantidad: nuevaCantidad
+
+        })
+
+        .eq("Identificación", idProducto);
+
+
+    if(errorActualizacion){
+
+        alert(
+            "Error actualizando el inventario: "
+            + errorActualizacion.message
+        );
+
+        return;
+
+    }
+
+
+    // 4. Registrar el movimiento
+
+    const { error: errorMovimiento } =
+
+        await clienteSupabase
+
         .from("Movimientos")
+
         .insert([{
+
             Fecha: fecha,
-            Producto: producto,
+
+            Producto: productoEncontrado.Nombre,
+
             Tipo: "Entrada",
+
             Cantidad: cantidad,
+
             Usuario: "Administrador",
+
             Observación: observacion,
+
             Numero_operacion: "EN-" + Date.now()
+
         }]);
 
+
     if(errorMovimiento){
-        alert("Error registrando el movimiento: " + errorMovimiento.message);
+
+        alert(
+            "Error registrando el movimiento: "
+            + errorMovimiento.message
+        );
+
         return;
+
     }
 
-    alert("Entrada registrada y cantidad actualizada correctamente.");
+
+    alert(
+        "Entrada registrada correctamente.\n\n"
+        + productoEncontrado.Nombre
+        + ": "
+        + nuevaCantidad
+        + " kg"
+    );
+
+
+    // Limpiar los campos
+
+    document.getElementById("cantidad").value = "";
+
+    document.getElementById("observacion").value = "";
+
 }
+
 </script>
 
-<script src="supabase.js"></script>
+
 <script>
 
 async function verificarSesion(){
 
-    const { data } = await clienteSupabase.auth.getSession();
+    const { data } =
+        await clienteSupabase.auth.getSession();
+
 
     if(!data.session){
 
@@ -204,9 +237,11 @@ async function verificarSesion(){
 
 }
 
+
 verificarSesion();
 
 </script>
-</body>
-</html>
 
+</body>
+
+</html>
