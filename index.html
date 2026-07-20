@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElDesierto</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f2e8;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .logo {
+            font-size: 70px;
+        }
+
+        h1 {
+            color: #8b4513;
+        }
+
+        .caja {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 350px;
+            margin: auto;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 8px;
+            border: 1px solid #aaa;
+        }
+
+        button {
+            background: #8b4513;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+    </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<div class="caja">
+
+    <div class="logo">🐷🌽</div>
+
+    <h1>ElDesierto</h1>
+
+    <p>Control de almacén porcino</p>
+
+    <input type="text" placeholder="Usuario">
+
+    <input type="password" placeholder="Contraseña">
+
+    <br><br>
+
+    <button onclick="entrar()">Entrar</button>
+
+
+</div>
+<script>
+function entrar(){
+window.location.href="menu.html";
+}
+</script>
+
+</body>
+</html>

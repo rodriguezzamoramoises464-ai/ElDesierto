@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Ajustes</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:15px;
+}
+
+h1{
+text-align:center;
+color:#8b4513;
+}
+
+.caja{
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+margin-top:20px;
+}
+
+.opcion{
+padding:15px;
+border-bottom:1px solid #ddd;
+font-size:16px;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+margin-bottom:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>⚙️ Ajustes</h1>
+
+<button onclick="window.location.href='menu.html'">
+⬅ Volver al menú
+</button>
+
+<div class="caja">
+
+<div class="opcion">
+📦 Productos registrados: 4
+</div>
+
+<div class="opcion">
+⚖️ Unidad de medida: Kilogramos (kg)
+</div>
+
+<div class="opcion">
+👤 Usuario actual: Administrador
+</div>
+
+<div class="opcion">
+📱 Aplicación: ElDesierto v1.0
+</div>
+
+</div>
+
+<script src="supabase.js"></script>
+
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+
+</body>
+
+</html>

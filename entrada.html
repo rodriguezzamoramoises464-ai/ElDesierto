@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Entrada de mercancía</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:20px;
+text-align:center;
+}
+
+.caja{
+background:white;
+max-width:350px;
+margin:auto;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+}
+
+input,select,textarea{
+width:90%;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:8px;
+font-size:16px;
+margin-top:10px;
+}
+
+h1{
+color:#8b4513;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<div class="caja">
+
+<h1>➕ Entrada</h1>
+
+<input type="date">
+
+<select id="producto">
+<option value="1">Maíz</option>
+<option value="2">Soja</option>
+<option value="3">Salvado</option>
+<option value="4">Cebada</option>
+</select>
+
+<input type="number" placeholder="Cantidad (kg)">
+
+<textarea placeholder="Observación"></textarea>
+
+<button onclick="guardar()">Guardar</button>
+
+</div>
+
+<script>
+
+async function guardar(){
+
+    const fecha = document.querySelector("input[type='date']").value;
+    const producto = document.querySelector("select").value;
+    const cantidad = Number(document.querySelector("input[type='number']").value);
+    const observacion = document.querySelector("textarea").value;
+
+    if(!fecha || !producto || !cantidad || cantidad <= 0){
+        alert("Completa correctamente la fecha, el producto y la cantidad.");
+        return;
+    }
+
+    // 1. Buscar el producto actual
+const idProducto = Number(producto);
+
+const { data: productosEncontrados, error: errorBusqueda } =
+    await clienteSupabase
+    .from("Productos")
+    .select("*")
+    .eq("Identificación", idProducto);
+
+if(errorBusqueda){
+    alert("Error buscando el producto: " + errorBusqueda.message);
+    return;
+}
+
+if(!productosEncontrados || productosEncontrados.length === 0){
+    alert("No se encontró el producto número " + idProducto);
+    return;
+}
+
+const productoEncontrado = productosEncontrados[0];
+
+    if(errorBusqueda){
+        alert("Error buscando el producto: " + errorBusqueda.message);
+        return;
+    }
+
+    // 2. Sumar la cantidad de la entrada al inventario actual
+    const nuevaCantidad = Number(productoEncontrado.Cantidad) + cantidad;
+
+    // 3. Actualizar el inventario
+    const { error: errorActualizacion } =
+        await clienteSupabase
+        .from("Productos")
+        .update({
+            Cantidad: nuevaCantidad
+        })
+        .eq("Identificación", productoEncontrado.Identificación);
+
+    if(errorActualizacion){
+        alert("Error actualizando el inventario: " + errorActualizacion.message);
+        return;
+    }
+
+    // 4. Registrar el movimiento
+    const { error: errorMovimiento } =
+        await clienteSupabase
+        .from("Movimientos")
+        .insert([{
+            Fecha: fecha,
+            Producto: producto,
+            Tipo: "Entrada",
+            Cantidad: cantidad,
+            Usuario: "Administrador",
+            Observación: observacion,
+            Numero_operacion: "EN-" + Date.now()
+        }]);
+
+    if(errorMovimiento){
+        alert("Error registrando el movimiento: " + errorMovimiento.message);
+        return;
+    }
+
+    alert("Entrada registrada y cantidad actualizada correctamente.");
+}
+</script>
+
+<script src="supabase.js"></script>
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+</body>
+</html>
+alert("Conexión con Supabase correcta.\nProductos encontrados: " + data.length);
+
+}catch(e){
+
+alert("Error: " + e.message);
+
+}
+
+}
+
+</script>
+<script src="supabase.js"></script>
+</body>
+</html>

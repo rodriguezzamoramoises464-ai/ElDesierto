@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Reportes</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:15px;
+}
+
+h1{
+text-align:center;
+color:#8b4513;
+}
+
+.caja{
+background:white;
+padding:15px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+margin-top:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#8b4513;
+color:white;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+margin-bottom:15px;
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<h1>📊 Reportes</h1>
+
+<button onclick="window.location.href='menu.html'">
+⬅ Volver al menú
+</button>
+
+<div class="caja">
+
+<h2>📋 Movimientos registrados</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Fecha</th>
+<th>Producto</th>
+<th>Tipo</th>
+<th>Cantidad</th>
+<th>Usuario</th>
+</tr>
+
+</thead>
+
+<tbody id="tablaReportes">
+
+</tbody>
+
+</table>
+
+</div>
+
+<script src="supabase.js"></script>
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+<script>
+
+async function cargarReportes(){
+
+const { data, error } = await clienteSupabase
+
+.from("Movimientos")
+
+.select("*")
+
+.order("Fecha", { ascending:false });
+
+if(error){
+
+alert("Error cargando reportes: " + error.message);
+
+return;
+
+}
+
+const tabla = document.getElementById("tablaReportes");
+
+tabla.innerHTML = "";
+
+data.forEach(movimiento => {
+
+tabla.innerHTML += `
+
+<tr>
+
+<td>${movimiento.Fecha || ""}</td>
+
+<td>${movimiento.Producto || ""}</td>
+
+<td>${movimiento.Tipo || ""}</td>
+
+<td>${movimiento.Cantidad || ""}</td>
+
+<td>${movimiento.Usuario || ""}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+cargarReportes();
+
+</script>
+
+</body>
+
+</html>

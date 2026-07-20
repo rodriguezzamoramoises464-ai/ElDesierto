@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Historial</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:15px;
+}
+
+h1{
+text-align:center;
+color:#8b4513;
+}
+
+.caja{
+background:white;
+padding:15px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+font-size:13px;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:8px;
+text-align:center;
+}
+
+th{
+background:#8b4513;
+color:white;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+margin-bottom:15px;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<h1>📜 Historial</h1>
+
+<button onclick="window.location.href='menu.html'">
+⬅ Volver al menú
+</button>
+
+<div class="caja">
+
+<table>
+
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Producto</th>
+<th>Tipo</th>
+<th>Cantidad</th>
+<th>Usuario</th>
+<th>Observación</th>
+<th>Operación</th>
+</tr>
+</thead>
+
+<tbody id="tablaHistorial">
+</tbody>
+
+</table>
+
+</div>
+
+<script src="supabase.js"></script>
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+<script>
+
+async function cargarHistorial(){
+
+const { data, error } = await clienteSupabase
+.from("Movimientos")
+.select("Fecha, Producto, Tipo, Cantidad, Usuario, Observación, Numero_operacion");
+
+if(error){
+alert("Error: " + error.message);
+return;
+}
+
+const tabla = document.getElementById("tablaHistorial");
+
+tabla.innerHTML = "";
+
+data.forEach(movimiento => {
+
+tabla.innerHTML += `
+<tr>
+<td>${movimiento.Fecha || ""}</td>
+<td>${movimiento.Producto || ""}</td>
+<td>${movimiento.Tipo || ""}</td>
+<td>${movimiento.Cantidad || ""}</td>
+<td>${movimiento.Usuario || ""}</td>
+<td>${movimiento.Observación || ""}</td>
+<td>${movimiento.Numero_operacion || ""}</td>
+</tr>
+`;
+
+});
+
+}
+
+cargarHistorial();
+
+</script>
+
+</body>
+</html>

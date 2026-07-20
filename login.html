@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ElDesierto - Iniciar sesión</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:20px;
+text-align:center;
+}
+
+.caja{
+background:white;
+max-width:350px;
+margin:50px auto;
+padding:25px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+}
+
+h1{
+color:#8b4513;
+}
+
+input{
+width:90%;
+padding:12px;
+margin:10px 0;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:8px;
+font-size:16px;
+margin-top:10px;
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<div class="caja">
+
+<h1>🏜️ ElDesierto</h1>
+
+<h2>Iniciar sesión</h2>
+
+<input type="email" id="email" placeholder="Correo electrónico">
+
+<input type="password" id="password" placeholder="Contraseña">
+
+<button onclick="iniciarSesion()">
+Entrar
+</button>
+
+</div>
+
+<script src="supabase.js"></script>
+
+<script>
+
+async function iniciarSesion(){
+
+const email = document.getElementById("email").value;
+const password = document.getElementById("password").value;
+
+if(!email || !password){
+
+alert("Escribe el correo y la contraseña.");
+
+return;
+
+}
+
+const { data, error } =
+await clienteSupabase.auth.signInWithPassword({
+
+email: email,
+password: password
+
+});
+
+if(error){
+
+alert("Error: " + error.message);
+
+return;
+
+}
+
+window.location.href = "menu.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

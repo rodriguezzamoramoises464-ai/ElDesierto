@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Inventario</title>
+
+<style>
+body{
+font-family:Arial;
+background:#f5f2e8;
+padding:15px;
+}
+
+h1{
+text-align:center;
+color:#8b4513;
+}
+
+.caja{
+background:white;
+padding:15px;
+border-radius:15px;
+box-shadow:0 0 10px #ccc;
+overflow-x:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:12px;
+text-align:center;
+}
+
+th{
+background:#8b4513;
+color:white;
+}
+
+button{
+background:#8b4513;
+color:white;
+border:none;
+padding:10px 20px;
+border-radius:8px;
+margin-bottom:15px;
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<h1>📦 Inventario</h1>
+
+<button onclick="window.location.href='menu.html'">
+⬅ Volver al menú
+</button>
+
+<div class="caja">
+
+<table>
+
+<thead>
+<tr>
+<th>Producto</th>
+<th>Unidad</th>
+<th>Cantidad</th>
+</tr>
+</thead>
+
+<tbody id="tablaInventario">
+</tbody>
+
+</table>
+
+</div>
+
+<script src="supabase.js"></script>
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+<script>
+
+async function cargarInventario(){
+
+const { data, error } = await clienteSupabase
+.from("Productos")
+.select("Nombre, Unidad, Cantidad");
+
+if(error){
+alert("Error cargando inventario: " + error.message);
+return;
+}
+
+const tabla = document.getElementById("tablaInventario");
+
+tabla.innerHTML = "";
+
+data.forEach(producto => {
+
+tabla.innerHTML += `
+<tr>
+<td>${producto.Nombre}</td>
+<td>${producto.Unidad}</td>
+<td>${producto.Cantidad}</td>
+</tr>
+`;
+
+});
+
+}
+
+cargarInventario();
+
+</script>
+
+</body>
+</html>

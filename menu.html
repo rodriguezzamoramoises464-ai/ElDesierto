@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ElDesierto - Menú</title>
+
+<style>
+
+body {
+font-family: Arial, sans-serif;
+background: #f5f2e8;
+text-align: center;
+padding: 25px;
+}
+
+h1 {
+color:#8b4513;
+}
+
+.boton {
+display:block;
+width:90%;
+max-width:350px;
+margin:15px auto;
+padding:18px;
+background:#8b4513;
+color:white;
+border-radius:12px;
+font-size:18px;
+}
+
+.logo {
+font-size:60px;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+<div class="logo">🐷🌽</div>
+
+<h1>ElDesierto</h1>
+
+<p>Panel principal</p>
+
+<div class="boton" onclick="window.location.href='inventario.html'">
+📦 Inventario
+</div>
+
+<div class="boton" onclick="abrirEntrada()">➕ Entrada de mercancía</div>
+
+<div class="boton" onclick="window.location.href='salida.html'">
+➖ Salida de mercancía
+</div>
+
+<div class="boton" onclick="window.location.href='historial.html'">
+📜 Historial
+</div>
+
+<div class="boton" onclick="window.location.href='reportes.html'">
+📊 Reportes
+</div>
+
+<div class="boton" onclick="window.location.href='ajustes.html'">
+⚙️ Ajustes
+</div>
+<script>
+
+function abrirInventario(){
+window.location.href="inventario.html";
+}
+
+function abrirEntrada(){
+window.location.href="entrada.html";
+}
+
+</script>
+<script src="supabase.js"></script>
+
+<script>
+
+async function verificarSesion(){
+
+    const { data } = await clienteSupabase.auth.getSession();
+
+    if(!data.session){
+
+        window.location.href = "login.html";
+
+    }
+
+}
+
+verificarSesion();
+
+</script>
+
+
+
+
+</body>
+</html>
