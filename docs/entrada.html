@@ -120,7 +120,7 @@ const productoEncontrado = productosEncontrados[0];
     .update({
         Cantidad: nuevaCantidad
     })
-    .eq("Identificación", productoEncontrado.Identificación)
+    .eq("Nombre", productoEncontrado.Nombre)
     .select();
 
     if(errorActualizacion){
