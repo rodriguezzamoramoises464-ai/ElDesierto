@@ -120,7 +120,7 @@ const productoEncontrado = productosEncontrados[0];
     .update({
         Cantidad: nuevaCantidad
     })
-    .eq("Identificación", idProducto);
+    .eq("Nombre", productoEncontrado.Nombre);
 
 if(errorActualizacion){
     alert("Error actualizando el inventario: " + errorActualizacion.message);
