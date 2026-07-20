@@ -114,19 +114,23 @@ const productoEncontrado = productosEncontrados[0];
     const nuevaCantidad = Number(productoEncontrado.Cantidad) + cantidad;
 
     // 3. Actualizar el inventario
-    const { error: errorActualizacion } =
-        await clienteSupabase
-        .from("Productos")
-        .update({
-            Cantidad: nuevaCantidad
-        })
-        .eq("Identificación", productoEncontrado.Identificación);
+    const { data: productoActualizado, error: errorActualizacion } =
+    await clienteSupabase
+    .from("Productos")
+    .update({
+        Cantidad: nuevaCantidad
+    })
+    .eq("Identificación", productoEncontrado.Identificación)
+    .select();
 
     if(errorActualizacion){
         alert("Error actualizando el inventario: " + errorActualizacion.message);
         return;
     }
-
+if(!productoActualizado || productoActualizado.length === 0){
+    alert("No se actualizó ninguna fila del inventario.");
+    return;
+          }
     // 4. Registrar el movimiento
     const { error: errorMovimiento } =
         await clienteSupabase
@@ -170,17 +174,4 @@ verificarSesion();
 </script>
 </body>
 </html>
-alert("Conexión con Supabase correcta.\nProductos encontrados: " + data.length);
 
-}catch(e){
-
-alert("Error: " + e.message);
-
-}
-
-}
-
-</script>
-<script src="supabase.js"></script>
-</body>
-</html>
