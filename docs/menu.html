@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html><html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>ElDesierto - Menú</title>
-
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>ElDesierto - Menú</title><style>
 
 body {
 font-family: Arial, sans-serif;
@@ -29,29 +24,25 @@ background:#8b4513;
 color:white;
 border-radius:12px;
 font-size:18px;
+cursor:pointer;
 }
 
 .logo {
 font-size:60px;
 }
 
-</style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
+#cargando {
+color:#8b4513;
+font-size:18px;
+}
 
-<body>
-
-<div class="logo">🐷🌽</div>
-
-<h1>ElDesierto</h1>
-
-<p>Panel principal</p>
-
-<div class="boton" onclick="window.location.href='inventario.html'">
+</style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><div class="logo">🐷🌽</div><h1>ElDesierto</h1><p>Panel principal</p><p id="cargando">Cargando usuario...</p><div id="menu" style="display:none;"><div class="boton" onclick="window.location.href='inventario.html'">
 📦 Inventario
 </div>
 
-<div class="boton" onclick="abrirEntrada()">➕ Entrada de mercancía</div>
+<div class="boton" onclick="window.location.href='entrada.html'">
+➕ Entrada de mercancía
+</div>
 
 <div class="boton" onclick="window.location.href='salida.html'">
 ➖ Salida de mercancía
@@ -65,42 +56,78 @@ font-size:60px;
 📊 Reportes
 </div>
 
-<div class="boton" onclick="window.location.href='ajustes.html'">
+<div id="botonAjustes" class="boton" onclick="window.location.href='ajustes.html'">
 ⚙️ Ajustes
 </div>
-<script>
 
-function abrirInventario(){
-window.location.href="inventario.html";
-}
+</div><script src="supabase.js"></script><script>
 
-function abrirEntrada(){
-window.location.href="entrada.html";
-}
+async function verificarUsuario(){
 
-</script>
-<script src="supabase.js"></script>
+    const { data: sesion, error: errorSesion } =
+        await clienteSupabase.auth.getSession();
 
-<script>
 
-async function verificarSesion(){
+    if(errorSesion){
 
-    const { data } = await clienteSupabase.auth.getSession();
+        alert("Error comprobando la sesión: " + errorSesion.message);
 
-    if(!data.session){
+        return;
+
+    }
+
+
+    if(!sesion.session){
 
         window.location.href = "login.html";
+
+        return;
+
+    }
+
+
+    const idUsuario = sesion.session.user.id;
+
+
+    const { data: perfil, error: errorPerfil } =
+
+        await clienteSupabase
+
+        .from("Perfiles")
+
+        .select("rol")
+
+        .eq("id", idUsuario)
+
+        .single();
+
+
+    if(errorPerfil){
+
+        alert("Error obteniendo el rol: " + errorPerfil.message);
+
+        return;
+
+    }
+
+
+    document.getElementById("cargando").innerText =
+        "Rol: " + perfil.rol;
+
+
+    document.getElementById("menu").style.display = "block";
+
+
+    if(perfil.rol === "Operador"){
+
+        document.getElementById("botonAjustes").style.display = "none";
 
     }
 
 }
 
-verificarSesion();
 
-</script>
+verificarUsuario();
 
-
-
-
-</body>
+</script></body>
 </html>
